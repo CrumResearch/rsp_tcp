@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(rsp_tcp VERSION 1.5.2)
+project(rsp_stdout VERSION 1.5.2)
 
 #find_library(USB_LIBRARY NAMES usb usb-1.0)
 find_package(Threads REQUIRED)
@@ -16,7 +16,7 @@ message(STATUS "LIBSDRPLAY_LIBRARIES - ${LIBSDRPLAY_LIBRARIES}")
 
 set(CMAKE_BUILD_TYPE Release)
 
-set(SOURCE_FILES rsp_tcp.c)
+set(SOURCE_FILES rsp_stdout.c)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 set(CMAKE_C_FLAGS "-Wall -ffast-math -march=native")
@@ -26,9 +26,9 @@ add_definitions(-D_GNU_SOURCE)
 add_definitions(-DSERVER_VERSION="${PROJECT_VERSION}")
 include_directories(${LIBSDRPLAY_INCLUDE_DIRS})
 
-add_executable(rsp_tcp ${SOURCE_FILES} )
-target_link_libraries(rsp_tcp ${LIBSDRPLAY_LIBRARIES} Threads::Threads -lm)
-install(TARGETS rsp_tcp DESTINATION bin)
+add_executable(rsp_stdout ${SOURCE_FILES} )
+target_link_libraries(rsp_stdout ${LIBSDRPLAY_LIBRARIES} Threads::Threads -lm)
+install(TARGETS rsp_stdout DESTINATION bin)
 
 set(CPACK_GENERATOR DEB)
 set(CPACK_PACKAGE_VENDOR "Bas ON5HB")
@@ -39,6 +39,6 @@ set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE)
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
 set(CPACK_STRIP_FILES true)
-set(CPACK_PACKAGE_EXECUTABLES rsp_tcp)
+set(CPACK_PACKAGE_EXECUTABLES rsp_stdout)
 
 include(CPack)
