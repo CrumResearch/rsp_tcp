@@ -134,16 +134,16 @@ void gc_callback(unsigned int gRdB, unsigned int lnaGRdB, void* cbContext )
 {
 	if (gRdB == mir_sdr_ADC_OVERLOAD_DETECTED)
 	{
-		printf("adc overload detected\n");
+		fprintf(stderr, "adc overload detected\n");
 		mir_sdr_GainChangeCallbackMessageReceived(); 
 	}
 	else if (gRdB == mir_sdr_ADC_OVERLOAD_CORRECTED)
 	{
-		printf("adc overload corrected\n");
+		fprintf(stderr,"adc overload corrected\n");
 		mir_sdr_GainChangeCallbackMessageReceived(); 
 	}
 	if (verbose)
-		printf("new gain reduction (%d), lna gain reduction (%d)\n", gRdB, lnaGRdB);
+		fprintf(stderr, "new gain reduction (%d), lna gain reduction (%d)\n", gRdB, lnaGRdB);
 }
 
 void rx_callback(short *xi, short *xq, unsigned int firstSampleNum, int grChanged, int rfChanged, int fsChanged, unsigned int numSamples, unsigned int reset, unsigned int hwRemoved, void* cbContext)
@@ -172,7 +172,7 @@ void rx_callback(short *xi, short *xq, unsigned int firstSampleNum, int grChange
 
 // I/Q value reader - if enabled show values
 //if (*xi > 1500 || *xi < -1500 || *xq > 1500 || *xq < -1500) {
-//printf("xi=%hd,xq=%hd\n",(*xi),(*xq));}
+//fprintf(stderr,"xi=%hd,xq=%hd\n",(*xi),(*xq));}
 
                         rpt->len = 2 * numSamples;
                 }
@@ -245,7 +245,7 @@ struct command{
 
 void usage(void)
 {
-	printf("rsp_stdout, an I/Q spectrum driver for SDRPlay receivers "
+	fprintf(stderr, "rsp_stdout, an I/Q spectrum driver for SDRPlay receivers "
 #ifdef SERVER_VERSION
 		"VERSION "SERVER_VERSION
 #endif
@@ -358,10 +358,10 @@ int main(int argc, char **argv)
 	r = mir_sdr_ApiVersion(&ver);
 	if (ver != MIR_SDR_API_VERSION) {
 		//  Error detected, include file does not match dll. Deal with error condition.
-		printf("library libmirsdrapi-rsp must be version %f\n", ver);
+		fprintf(stderr, "library libmirsdrapi-rsp must be version %f\n", ver);
 		exit(1);
 	}
-	printf("libmirsdrapi-rsp version %.2f found\n", ver);
+	fprintf(stderr, "libmirsdrapi-rsp version %.2f found\n", ver);
 
 	// enable debug output
 	if (verbose)
@@ -398,11 +398,11 @@ int main(int argc, char **argv)
 
 	// get RSP model and display modelname.
 	devModel = devices[device].hwVer;
-	if (devModel == 1) printf("detected RSP model (hw version %d) = RSP1\n", devModel);
-	else if (devModel == 2) printf("detected RSP model (hw version %d) = RSP2\n", devModel);
-	else if (devModel == 3) printf("detected RSP model (hw version %d) = RSPduo\n", devModel);
-	else if (devModel == 255) printf("detected RSP model (hw version %d) = RSP1A\n", devModel);
-	else printf("detected RSP model (hw version %d) = Unknown\n", devModel);
+	if (devModel == 1) fprintf(stderr, "detected RSP model (hw version %d) = RSP1\n", devModel);
+	else if (devModel == 2) fprintf(stderr, "detected RSP model (hw version %d) = RSP2\n", devModel);
+	else if (devModel == 3) fprintf(stderr, "detected RSP model (hw version %d) = RSPduo\n", devModel);
+	else if (devModel == 255) fprintf(stderr, "detected RSP model (hw version %d) = RSP1A\n", devModel);
+	else fprintf(stderr, "detected RSP model (hw version %d) = Unknown\n", devModel);
 
 	// select antenna
 	switch (antenna) {
@@ -434,14 +434,14 @@ int main(int argc, char **argv)
 	//pthread_cond_init(&exit_cond, NULL);
 
 	while(1) {
-		printf("outputting to stdout...\n");
+		fprintf(stderr, "outputting to stdout...\n");
 
-		printf("client accepted!\n");
-                printf("AGC-type set %dHz (0 means disabled)\n", agctype);
-                printf("Low-Noise-Amp mode set %u \n", rspLNA);
-                printf("Gain-Reduction set %d \n", gainReduction);
-                printf("AGC-Gain-Setpoint set %d \n", agcSetPoint);
-                printf("Edgefilter set %d (0=off 1=on)\n", edgefilter);
+		fprintf(stderr, "parameters:\n");
+        fprintf(stderr, "AGC-type set %dHz (0 means disabled)\n", agctype);
+        fprintf(stderr, "Low-Noise-Amp mode set %u \n", rspLNA);
+        fprintf(stderr, "Gain-Reduction set %d \n", gainReduction);
+        fprintf(stderr, "AGC-Gain-Setpoint set %d \n", agcSetPoint);
+        fprintf(stderr, "Edgefilter set %d (0=off 1=on)\n", edgefilter);
 
 		memset(&dongle_info, 0, sizeof(dongle_info));
 		memcpy(&dongle_info.magic, "RTL0", 4);
@@ -462,7 +462,7 @@ int main(int argc, char **argv)
 		r = mir_sdr_StreamInit(&gainReduction, (samp_rate/1e6), (frequency/1e6), bwType, 0, rspLNA, &infoOverallGr, mir_sdr_USE_RSP_SET_GR, &samples_per_packet, rx_callback, gc_callback, (void *)NULL);
 		if (r != mir_sdr_Success)
 		{
-			printf("failed to start the RSP device, return (%d)\n", r);
+			fprintf(stderr, "failed to start the RSP device, return (%d)\n", r);
 			break;
 		}
 		fprintf(stderr,"started rx\n");
@@ -500,7 +500,7 @@ int main(int argc, char **argv)
 		// stop the receiver
 		mir_sdr_StreamUninit();
 
-		printf("all threads dead..\n");
+		fprintf(stderr, "all threads dead..\n");
 
 		curelem = ll_buffers;
 		ll_buffers = 0;
@@ -520,6 +520,6 @@ int main(int argc, char **argv)
 	mir_sdr_StreamUninit();
 	mir_sdr_ReleaseDeviceIdx();
 
-	printf("bye!\n");
+	fprintf(stderr, "bye!\n");
 	return r >= 0 ? r : -r;
 }
